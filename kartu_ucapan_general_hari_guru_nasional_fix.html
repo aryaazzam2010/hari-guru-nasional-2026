@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selamat Hari Guru Nasional</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts: Cormorant Garamond, Plus Jakarta Sans, & Dancing Script -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400;1,600;1,700&family=Dancing+Script:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        ivory: '#FAF6F0',
+                        ivoryDark: '#EFE7DA',
+                        emeraldDeep: '#1B4332',
+                        emeraldMid: '#2D6A4F',
+                        antiqueGold: '#C59B27',
+                        goldLight: '#E8D59E',
+                        terracotta: '#B84A39',
+                    },
+                    fontFamily: {
+                        serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+                        sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+                        hand: ['"Dancing Script"', 'cursive'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #FAF6F0;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #C59B27;
+            border-radius: 9999px;
+        }
+
+        /* Tekstur Kertas Klasik Halus */
+        .bg-paper-texture {
+            background-color: #FAF6F0;
+            background-image:
+                radial-gradient(rgba(197, 155, 39, 0.14) 1px, transparent 0),
+                radial-gradient(rgba(27, 67, 50, 0.06) 1px, transparent 0);
+            background-size: 28px 28px;
+            background-position: 0 0, 14px 14px;
+        }
+
+        .envelope-paper-grain {
+            background: linear-gradient(145deg, #FDFBF7 0%, #F4ECE0 55%, #EBE0CE 100%);
+            box-shadow:
+                0 22px 45px -12px rgba(27, 67, 50, 0.22),
+                0 4px 14px rgba(197, 155, 39, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.9);
+        }
+
+        /* Animasi Halaman & Elemen */
+        @keyframes fadeSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .page-enter {
+            animation: fadeSlideUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes floatParticle {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(0.8) rotate(0deg);
+            }
+            50% {
+                opacity: 1;
+                transform: translateY(-95px) scale(1.22) rotate(14deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-195px) scale(0.95) rotate(-10deg);
+            }
+        }
+        .particle-anim {
+            position: fixed;
+            pointer-events: none;
+            z-index: 60;
+            animation: floatParticle 1.85s ease-out forwards;
+        }
+
+        /* =================================================================
+           PENGALAMAN AMPLOP INTERAKTIF 3D
+           ================================================================= */
+        .envelope-scene {
+            perspective: 1400px;
+        }
+
+        .envelope-body {
+            position: relative;
+            width: 100%;
+            max-width: 460px;
+            aspect-ratio: 16 / 11;
+            margin: 0 auto;
+            border-radius: 20px;
+            border: 1.5px solid rgba(197, 155, 39, 0.55);
+            cursor: pointer;
+            transition: transform 0.35s ease, box-shadow 0.35s ease;
+        }
+
+        .envelope-body:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 28px 52px -12px rgba(27, 67, 50, 0.28);
+        }
+
+        /* Kartu Mini di dalam Kantong Amplop */
+        .envelope-inner-card {
+            position: absolute;
+            left: 7%;
+            right: 7%;
+            bottom: 8%;
+            height: 82%;
+            background: #FFFFFF;
+            border: 1.5px solid #C59B27;
+            border-radius: 14px;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .envelope-body.is-opening .envelope-inner-card {
+            transform: translateY(-42%);
+        }
+
+        /* Kantong Depan Amplop (Kiri, Kanan, Bawah) */
+        .envelope-pocket {
+            position: absolute;
+            inset: 0;
+            z-index: 3;
+            border-radius: 19px;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        /* Tutup Atas Amplop 3D */
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 58%;
+            z-index: 4;
+            transform-origin: top center;
+            transform-style: preserve-3d;
+            transition: transform 0.75s cubic-bezier(0.4, 0, 0.2, 1), z-index 0.2s linear 0.35s;
+            pointer-events: none;
+        }
+
+        .envelope-body.is-opening .envelope-flap {
+            transform: rotateX(180deg);
+            z-index: 1;
+        }
+
+        /* Segel Lilin Emas Timbul */
+        .wax-seal-btn {
+            position: absolute;
+            top: 52%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+            background: radial-gradient(circle at 32% 28%, #ebd07a 0%, #C59B27 58%, #967213 100%);
+            box-shadow:
+                0 10px 24px rgba(27, 67, 50, 0.3),
+                0 3px 6px rgba(0, 0, 0, 0.18),
+                inset 0 2px 4px rgba(255, 255, 255, 0.65),
+                inset 0 -3px 6px rgba(110, 80, 8, 0.45);
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.45s ease;
+        }
+
+        .envelope-body:hover .wax-seal-btn {
+            transform: translate(-50%, -50%) scale(1.07);
+        }
+
+        .envelope-body.is-opening .wax-seal-btn {
+            opacity: 0;
+            transform: translate(-50%, -80%) scale(0.7);
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="bg-paper-texture text-[#1B4332] font-sans antialiased min-h-screen flex flex-col selection:bg-[#C59B27]/25 selection:text-[#1B4332]">
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- =====================================================================
+         HEADER NAVIGASI UTAMA (3 MENU: BERANDA, KARTU UCAPAN, DINDING APRESIASI)
+         ===================================================================== -->
+    <header class="sticky top-0 z-40 bg-[#FAF6F0]/95 backdrop-blur-md border-b border-[#C59B27]/35">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 sm:h-20">
+                <!-- Judul Brand -->
+                <a href="#beranda" class="flex items-center gap-3 group">
+                    <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-[#1B4332] text-[#C59B27] flex items-center justify-center shadow-md border border-[#C59B27]/40 group-hover:scale-105 transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="font-serif font-bold text-lg sm:text-xl text-[#1B4332] block leading-none tracking-tight">Hari Guru Nasional</span>
+                        <span class="font-hand text-base sm:text-lg text-[#B84A39] font-bold leading-tight">Pelita Sepanjang Masa</span>
+                    </div>
+                </a>
+
+                <!-- Navigasi Desktop (3 Menu) -->
+                <nav class="hidden md:flex items-center gap-1.5 bg-white/85 p-1.5 rounded-2xl border border-[#C59B27]/30 shadow-sm">
+                    <a href="#beranda" data-nav="beranda" class="nav-link px-5 py-2 rounded-xl text-sm font-semibold transition">
+                        Beranda
+                    </a>
+                    <a href="#ucapan" data-nav="ucapan" class="nav-link px-5 py-2 rounded-xl text-sm font-semibold transition">
+                        Kartu Ucapan
+                    </a>
+                    <a href="#apresiasi" data-nav="apresiasi" class="nav-link px-5 py-2 rounded-xl text-sm font-semibold transition">
+                        Dinding Apresiasi
+                    </a>
+                </nav>
+
+                <!-- Tombol Menu Mobile -->
+                <button onclick="toggleMobileMenu()" aria-label="Buka Menu Navigasi" class="md:hidden p-2.5 rounded-xl bg-white border border-[#C59B27]/35 text-[#1B4332] hover:bg-[#1B4332] hover:text-[#FAF6F0] transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Dropdown Menu Mobile -->
+            <div id="mobile-menu" class="hidden md:hidden pb-4 pt-2 border-t border-[#C59B27]/25 flex flex-col gap-1.5">
+                <a href="#beranda" onclick="closeMobileMenu()" data-nav="beranda" class="nav-link px-4 py-2.5 rounded-xl text-sm font-semibold">Beranda</a>
+                <a href="#ucapan" onclick="closeMobileMenu()" data-nav="ucapan" class="nav-link px-4 py-2.5 rounded-xl text-sm font-semibold">Kartu Ucapan</a>
+                <a href="#apresiasi" onclick="closeMobileMenu()" data-nav="apresiasi" class="nav-link px-4 py-2.5 rounded-xl text-sm font-semibold">Dinding Apresiasi</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- =====================================================================
+         KONTEN UTAMA (3 HALAMAN SPA)
+         ===================================================================== -->
+    <main class="flex-1">
+
+        <!-- =================================================================
+             1. HALAMAN BERANDA (#beranda)
+             ================================================================= -->
+        <section id="page-beranda" class="page-section hidden page-enter max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-14">
+            
+            <!-- Hero Section: Satu Kartu, Sejuta Terima Kasih -->
+            <div class="relative rounded-3xl bg-[#1B4332] text-[#FAF6F0] p-7 sm:p-12 lg:p-16 overflow-hidden shadow-xl border-2 border-[#C59B27]/50">
+                <!-- Ornamen Sudut Emas Halus -->
+                <div class="absolute top-4 left-4 w-12 h-12 border-t-2 border-l-2 border-[#C59B27]/40 rounded-tl-xl pointer-events-none"></div>
+                <div class="absolute top-4 right-4 w-12 h-12 border-t-2 border-r-2 border-[#C59B27]/40 rounded-tr-xl pointer-events-none"></div>
+                <div class="absolute bottom-4 left-4 w-12 h-12 border-b-2 border-l-2 border-[#C59B27]/40 rounded-bl-xl pointer-events-none"></div>
+                <div class="absolute bottom-4 right-4 w-12 h-12 border-b-2 border-r-2 border-[#C59B27]/40 rounded-br-xl pointer-events-none"></div>
+
+                <!-- Cahaya Latar -->
+                <div class="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-[#C59B27]/20 blur-3xl pointer-events-none"></div>
+                <div class="absolute -bottom-24 -left-24 w-80 h-80 rounded-full bg-[#B84A39]/25 blur-3xl pointer-events-none"></div>
+
+                <div class="relative z-10 max-w-3xl mx-auto text-center">
+                    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-[#C59B27]/45 text-[#C59B27] text-xs font-semibold tracking-widest uppercase mb-5">
+                        <span>✦</span> Selamat Hari Guru Nasional <span>✦</span>
+                    </div>
+
+                    <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight text-white">
+                        Satu Kartu, <span class="italic text-[#C59B27]">Sejuta Terima Kasih</span>
+                    </h1>
+
+                    <p class="mt-5 text-sm sm:text-lg text-[#FAF6F0]/90 leading-relaxed max-w-2xl mx-auto">
+                        Sebuah persembahan hangat yang setara dan penuh hormat untuk seluruh Ms dan Mr tercinta. Atas setiap kesabaran, ketulusan, dan cahaya ilmu yang telah menyalakan masa depan kami.
+                    </p>
+
+                    <!-- Tombol Utama & Sekunder -->
+                    <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3.5 sm:gap-4">
+                        <a href="#ucapan" class="w-full sm:w-auto px-7 py-4 rounded-2xl bg-[#C59B27] hover:bg-[#d4a933] text-[#1B4332] font-bold text-sm sm:text-base shadow-lg transition transform active:scale-95 flex items-center justify-center gap-2.5">
+                            <span>✉️ Buka Kartu Ucapan</span>
+                        </a>
+                        <a href="#apresiasi" class="w-full sm:w-auto px-7 py-4 rounded-2xl bg-[#B84A39] hover:bg-[#c75644] text-white font-semibold text-sm sm:text-base shadow-md transition transform active:scale-95 flex items-center justify-center gap-2.5">
+                            <span>✍️ Tulis Pesan di Dinding</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grid Tengah: Kutipan Ki Hajar Dewantara & Kirim Bunga Virtual -->
+            <div class="mt-10 grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
+                
+                <!-- Kutipan Inspiratif Ki Hajar Dewantara dalam Bingkai Ornamen Klasik -->
+                <div class="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-9 border border-[#C59B27]/40 shadow-sm flex flex-col justify-between relative">
+                    <div class="border border-[#C59B27]/35 rounded-2xl p-6 sm:p-8 bg-[#FAF6F0]/55 h-full flex flex-col justify-between relative">
+                        <!-- Ornamen Atas -->
+                        <div class="text-center mb-3">
+                            <span class="text-[#C59B27] text-lg tracking-[0.35em] select-none">❖ ✦ ❖</span>
+                            <span class="block text-[11px] font-bold uppercase tracking-widest text-[#B84A39] mt-1">Semboyan Pendidikan Indonesia</span>
+                        </div>
+
+                        <blockquote class="font-serif italic text-2xl sm:text-3xl text-[#1B4332] font-bold leading-snug text-center my-2">
+                            “Ing Ngarso Sung Tulodo, Ing Madyo Mangun Karso, Tut Wuri Handayani.”
+                        </blockquote>
+
+                        <p class="mt-3 text-xs sm:text-sm text-[#1B4332]/80 leading-relaxed text-center max-w-xl mx-auto">
+                            Di depan memberi teladan, di tengah membangun kemauan, di belakang memberi dorongan. Terima kasih Ms dan Mr yang senantiasa menjadi penuntun langkah kami.
+                        </p>
+
+                        <div class="mt-6 pt-4 border-t border-[#C59B27]/25 flex items-center justify-between text-xs">
+                            <span class="font-serif font-bold text-sm text-[#1B4332]">— Ki Hajar Dewantara</span>
+                            <span class="text-[#C59B27] font-semibold">Bapak Pendidikan Nasional</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fitur Interaktif: Kirim Bunga & Apresiasi Virtual -->
+                <div class="lg:col-span-5 bg-white rounded-3xl p-7 sm:p-9 border border-[#C59B27]/40 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold uppercase tracking-widest text-[#1B4332]/65">Apresiasi Bersama</span>
+                            <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-[#1B4332] bg-[#1B4332]/10 px-3 py-1 rounded-full">
+                                <span class="w-2 h-2 rounded-full bg-[#C59B27] animate-pulse"></span> Interaktif
+                            </span>
+                        </div>
+                        <h2 class="font-serif text-2xl sm:text-3xl font-bold text-[#1B4332] mt-2">Kirim Bunga & Apresiasi Virtual</h2>
+                        <p class="text-xs sm:text-sm text-[#1B4332]/75 mt-2 leading-relaxed">
+                            Ketuk tombol di bawah untuk mengirimkan buket bunga virtual dan penghormatan bagi seluruh Bapak & Ibu Guru kita.
+                        </p>
+                    </div>
+
+                    <div class="mt-6 space-y-4">
+                        <div class="grid grid-cols-2 gap-3.5">
+                            <div class="p-4 rounded-2xl bg-[#FAF6F0] border border-[#C59B27]/35 text-center">
+                                <span class="text-2xl sm:text-3xl block">💐</span>
+                                <span id="home-flower-count" class="font-serif text-2xl sm:text-3xl font-bold text-[#1B4332] block mt-1">0</span>
+                                <span class="text-[11px] font-semibold text-[#1B4332]/70">Bunga Terkirim</span>
+                            </div>
+                            <div class="p-4 rounded-2xl bg-[#FAF6F0] border border-[#C59B27]/35 text-center">
+                                <span class="text-2xl sm:text-3xl block">✨</span>
+                                <span id="home-appreciation-count" class="font-serif text-2xl sm:text-3xl font-bold text-[#B84A39] block mt-1">0</span>
+                                <span class="text-[11px] font-semibold text-[#1B4332]/70">Apresiasi Hangat</span>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <button onclick="sendHomeVirtualFlowers('flower', event)" class="p-3.5 rounded-2xl bg-[#1B4332] hover:bg-[#2D6A4F] text-[#FAF6F0] font-semibold text-xs sm:text-sm shadow-md transition transform active:scale-95 flex items-center justify-center gap-2">
+                                <span>🌸 Kirim Bunga</span>
+                            </button>
+                            <button onclick="sendHomeVirtualFlowers('salute', event)" class="p-3.5 rounded-2xl bg-[#B84A39] hover:bg-[#c75644] text-white font-semibold text-xs sm:text-sm shadow-md transition transform active:scale-95 flex items-center justify-center gap-2">
+                                <span>👏 Beri Apresiasi</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================
+             2. HALAMAN KARTU UCAPAN GENERAL (#ucapan)
+             ================================================================= -->
+        <section id="page-ucapan" class="page-section hidden page-enter max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+
+            <!-- TAHAP 1: AMPLOP KREM 3D BERSEGEL LILIN EMAS -->
+            <div id="envelope-stage" class="py-4 sm:py-8">
+                <div class="text-center max-w-lg mx-auto mb-7">
+                    <span class="text-xs font-bold uppercase tracking-widest text-[#B84A39]">Persembahan Spesial Hari Guru</span>
+                    <h1 class="font-serif text-3xl sm:text-4xl font-bold text-[#1B4332] mt-1">Untuk Bapak & Ibu Guru Tercinta</h1>
+                    <p class="text-xs sm:text-sm text-[#1B4332]/75 mt-1.5">
+                        Sebuah surat penghargaan universal bagi seluruh pendidik yang telah membimbing dengan sepenuh hati.
+                    </p>
+                </div>
+
+                <!-- Visual Amplop 3D -->
+                <div class="envelope-scene px-2">
+                    <div id="interactive-envelope" onclick="triggerOpenEnvelope3D()" role="button" tabindex="0" aria-label="Ketuk untuk Membuka Amplop" onkeydown="if(event.key==='Enter'||event.key===' ') triggerOpenEnvelope3D()" class="envelope-body envelope-paper-grain select-none">
+                        
+                        <!-- Kartu di dalam amplop yang muncul naik saat dibuka -->
+                        <div class="envelope-inner-card">
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-[#C59B27]">Hari Guru Nasional</span>
+                            <p class="font-serif font-bold text-base sm:text-lg text-[#1B4332] mt-1">Untuk Bapak & Ibu Guru Tercinta</p>
+                            <p class="font-hand text-lg text-[#B84A39] mt-0.5">Terima kasih atas segala ilmu...</p>
+                        </div>
+
+                        <!-- Kantong Depan Amplop (SVG Lipatan Kertas Presisi) -->
+                        <div class="envelope-pocket">
+                            <svg viewBox="0 0 460 316" class="w-full h-full" preserveAspectRatio="none">
+                                <!-- Lipatan Kiri -->
+                                <polygon points="0,0 230,175 0,316" fill="#F3EAE0" stroke="#C59B27" stroke-opacity="0.35" stroke-width="1" />
+                                <!-- Lipatan Kanan -->
+                                <polygon points="460,0 230,175 460,316" fill="#EFE4D6" stroke="#C59B27" stroke-opacity="0.35" stroke-width="1" />
+                                <!-- Lipatan Bawah -->
+                                <polygon points="0,316 230,152 460,316" fill="#FAF6F0" stroke="#C59B27" stroke-opacity="0.45" stroke-width="1.2" />
+                            </svg>
+                        </div>
+
+                        <!-- Tutup Atas Amplop 3D -->
+                        <div class="envelope-flap">
+                            <svg viewBox="0 0 460 185" class="w-full h-full drop-shadow-md" preserveAspectRatio="none">
+                                <polygon points="0,0 460,0 230,178" fill="#F7EFE4" stroke="#C59B27" stroke-opacity="0.55" stroke-width="1.5" />
+                            </svg>
+                        </div>
+
+                        <!-- Segel Lilin Emas Timbul -->
+                        <button type="button" class="wax-seal-btn w-24 h-24 sm:w-28 sm:h-28 rounded-full flex flex-col items-center justify-center text-[#1B4332] border-4 border-[#f4e0a1]/75 px-2">
+                            <span class="text-xs leading-none mb-0.5 text-[#1B4332]/85">✦</span>
+                            <span class="font-serif font-bold text-xs sm:text-sm leading-tight text-center tracking-tight">
+                                Selamat<br>Hari Guru
+                            </span>
+                            <span class="text-[9px] font-bold uppercase tracking-widest mt-0.5 text-[#1B4332]/75">Buka</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Petunjuk & Tombol Aksi di Bawah Amplop -->
+                <div class="mt-7 text-center">
+                    <button onclick="triggerOpenEnvelope3D()" class="px-7 py-3.5 rounded-2xl bg-[#1B4332] hover:bg-[#2D6A4F] text-[#FAF6F0] font-semibold text-sm shadow-lg transition transform active:scale-95 inline-flex items-center gap-2.5">
+                        <span>✉️ Ketuk untuk Membuka Amplop</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- TAHAP 2: KARTU UCAPAN GENERAL TERBUKA -->
+            <div id="card-opened-stage" class="hidden page-enter max-w-2xl mx-auto">
+                
+                <!-- Bilah Kontrol Atas: Tutup Amplop & Kontrol Musik -->
+                <div class="flex items-center justify-between gap-2 mb-4">
+                    <button onclick="resetCloseEnvelope()" class="px-3.5 py-2 rounded-xl bg-white hover:bg-[#FAF6F0] border border-[#C59B27]/40 text-xs font-semibold text-[#1B4332] shadow-sm transition flex items-center gap-1.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 19v-8.93a2 2 0 01.89-1.664l7-4.666a2 2 0 012.22 0l7 4.666A2 2 0 0121 10.07V19M3 19a2 2 0 002 2h14a2 2 0 002-2M3 19l6.75-4.5M21 19l-6.75-4.5" />
+                        </svg>
+                        <span>Tutup Amplop</span>
+                    </button>
+
+                    <button id="music-control-btn" onclick="toggleCardMusic()" class="px-3.5 py-2 rounded-xl bg-white hover:bg-[#FAF6F0] border border-[#C59B27]/40 text-xs font-semibold text-[#1B4332] shadow-sm transition flex items-center gap-2">
+                        <span id="music-status-icon">🎵</span>
+                        <span id="music-status-text">Musik: Aktif</span>
+                    </button>
+                </div>
+
+                <!-- Pilihan 3 Nuansa Pesan General (Pill Buttons) -->
+                <div class="mb-5 bg-white/90 p-2 rounded-2xl border border-[#C59B27]/35 shadow-sm">
+                    <p class="text-[11px] font-bold uppercase tracking-wider text-center text-[#1B4332]/65 mb-2 mt-0.5">Pilih Nuansa Ucapan General</p>
+                    <div class="grid grid-cols-3 gap-1.5 sm:gap-2">
+                        <button type="button" onclick="selectCardNuance('puitis')" id="nuance-btn-puitis" class="nuance-pill py-2.5 px-2 sm:px-4 rounded-xl text-xs sm:text-sm font-bold transition bg-[#1B4332] text-[#FAF6F0] shadow-sm">
+                            Hangat & Puitis
+                        </button>
+                        <button type="button" onclick="selectCardNuance('resmi')" id="nuance-btn-resmi" class="nuance-pill py-2.5 px-2 sm:px-4 rounded-xl text-xs sm:text-sm font-semibold transition text-[#1B4332] hover:bg-[#FAF6F0]">
+                            Resmi & Elegan
+                        </button>
+                        <button type="button" onclick="selectCardNuance('singkat')" id="nuance-btn-singkat" class="nuance-pill py-2.5 px-2 sm:px-4 rounded-xl text-xs sm:text-sm font-semibold transition text-[#1B4332] hover:bg-[#FAF6F0]">
+                            Singkat & Menyentuh
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Desain Kartu Ucapan General -->
+                <article class="bg-white rounded-3xl shadow-2xl border-2 border-[#C59B27]/65 overflow-hidden relative">
+                    <!-- Header Kartu Hijau Zamrud Tua -->
+                    <div class="bg-[#1B4332] text-[#FAF6F0] px-6 sm:px-10 py-8 sm:py-10 text-center relative">
+                        <!-- Garis Bingkai Dalam Header -->
+                        <div class="absolute inset-3 border border-[#C59B27]/35 rounded-2xl pointer-events-none"></div>
+
+                        <div class="relative z-10">
+                            <span class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 border border-[#C59B27]/40 text-[#C59B27] text-xs font-semibold tracking-widest uppercase mb-3">
+                                <span>✦</span> Selamat Hari Guru Nasional <span>✦</span>
+                            </span>
+                            <h2 class="font-serif text-2xl sm:text-4xl font-bold text-white leading-tight mt-1">
+                                Untuk Bapak & Ibu Guru Tercinta
+                            </h2>
+                            <p class="text-xs sm:text-sm text-[#E8D59E] mt-2 font-medium tracking-wide">
+                                Pahlawan Tanpa Tanda Jasa • Pelita Peradaban
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Badan Surat Krem Hangat -->
+                    <div class="p-6 sm:p-10 bg-[#FAF6F0]/65">
+                        <div class="bg-white rounded-2xl p-6 sm:p-9 border border-[#C59B27]/40 shadow-inner relative">
+                            <!-- Ornamen Tanda Kutip -->
+                            <div class="text-center text-[#C59B27] text-sm tracking-[0.4em] mb-4 select-none">❖ ✦ ❖</div>
+
+                            <!-- Isi Pesan General Dinamis -->
+                            <div id="general-card-body" class="font-serif text-lg sm:text-xl text-[#1B4332] leading-relaxed italic text-center space-y-4">
+                                <!-- Diisi JS sesuai nuansa yang dipilih -->
+                            </div>
+
+                            <!-- Tanda Tangan Tulisan Tangan -->
+                            <div class="mt-8 pt-6 border-t border-[#C59B27]/30 text-center">
+                                <p class="text-xs sm:text-sm text-[#1B4332]/75 font-medium">
+                                    Dengan penuh hormat dan terima kasih,
+                                </p>
+                                <p class="font-hand text-2xl sm:text-3xl font-bold text-[#B84A39] mt-1.5">
+                                    Keluarga Besar Siswa & Panitia
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- FITUR INTERAKTIF DI BAWAH KARTU -->
+                <div class="mt-7 space-y-5">
+                    
+                    <!-- 1. Tombol Reaksi Terima Kasih dengan Penghitung Animasi -->
+                    <div class="bg-white rounded-3xl p-5 sm:p-6 border border-[#C59B27]/35 shadow-sm text-center">
+                        <p class="text-xs font-bold uppercase tracking-wider text-[#1B4332]/70 mb-3.5">
+                            Kirim Reaksi Penghormatan untuk Guru
+                        </p>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                            <button onclick="triggerCardReaction('thanks', event)" class="p-3 rounded-2xl bg-[#FAF6F0] hover:bg-rose-50 border border-[#C59B27]/40 text-xs sm:text-sm font-bold text-[#1B4332] transition transform active:scale-95 flex items-center justify-center gap-2">
+                                <span>❤️ Terima Kasih</span>
+                                <span id="react-count-thanks" class="px-2 py-0.5 rounded-full bg-white text-[#B84A39] text-xs font-extrabold border border-[#C59B27]/30">0</span>
+                            </button>
+                            <button onclick="triggerCardReaction('flower', event)" class="p-3 rounded-2xl bg-[#FAF6F0] hover:bg-amber-50 border border-[#C59B27]/40 text-xs sm:text-sm font-bold text-[#1B4332] transition transform active:scale-95 flex items-center justify-center gap-2">
+                                <span>🌸 Bunga untuk Guru</span>
+                                <span id="react-count-flower" class="px-2 py-0.5 rounded-full bg-white text-[#B84A39] text-xs font-extrabold border border-[#C59B27]/30">0</span>
+                            </button>
+                            <button onclick="triggerCardReaction('respect', event)" class="p-3 rounded-2xl bg-[#FAF6F0] hover:bg-emerald-50 border border-[#C59B27]/40 text-xs sm:text-sm font-bold text-[#1B4332] transition transform active:scale-95 flex items-center justify-center gap-2">
+                                <span>🙏 Hormat & Bangga</span>
+                                <span id="react-count-respect" class="px-2 py-0.5 rounded-full bg-white text-[#B84A39] text-xs font-extrabold border border-[#C59B27]/30">0</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 2. Tombol Simpan Kartu (PNG) & Salin Link Kartu -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                        <button onclick="exportGeneralCardPng()" class="p-4 rounded-2xl bg-[#1B4332] hover:bg-[#2D6A4F] text-[#FAF6F0] font-bold text-xs sm:text-sm shadow-md transition transform active:scale-95 flex items-center justify-center gap-2.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#C59B27]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            <span>Simpan Kartu (PNG)</span>
+                        </button>
+
+                        <button onclick="copyGeneralCardLink()" class="p-4 rounded-2xl bg-white hover:bg-[#FAF6F0] text-[#1B4332] border-2 border-[#C59B27]/60 font-bold text-xs sm:text-sm shadow-sm transition transform active:scale-95 flex items-center justify-center gap-2.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#B84A39]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                            </svg>
+                            <span>Salin Link Kartu</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================
+             3. HALAMAN DINDING APRESIASI (#apresiasi)
+             ================================================================= -->
+        <section id="page-apresiasi" class="page-section hidden page-enter max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+            
+            <!-- Header Halaman -->
+            <div class="text-center max-w-2xl mx-auto mb-10">
+                <span class="text-xs font-bold uppercase tracking-widest text-[#B84A39]">Papan Kenangan Bersama</span>
+                <h1 class="font-serif text-3xl sm:text-4xl font-bold text-[#1B4332] mt-1">Dinding Apresiasi untuk Guru</h1>
+                <p class="text-xs sm:text-sm text-[#1B4332]/75 mt-2 leading-relaxed">
+                    Tuliskan pesan terima kasih, doa terbaik, dan rasa hormat untuk seluruh Bapak & Ibu Guru pada kartu pos digital di bawah ini.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                
+                <!-- Kolom Kiri: Formulir Tulis Ucapan -->
+                <div class="lg:col-span-4 bg-white rounded-3xl p-6 sm:p-7 border border-[#C59B27]/40 shadow-sm lg:sticky lg:top-24">
+                    <h2 class="font-serif text-xl sm:text-2xl font-bold text-[#1B4332] mb-4 flex items-center gap-2">
+                        <span>✍️</span> Tulis Kartu Apresiasi
+                    </h2>
+
+                    <form onsubmit="submitWallPost(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-[#1B4332] mb-1">
+                                Nama Pengirim / Kelas <span class="font-normal text-[#1B4332]/60">(Opsional)</span>
+                            </label>
+                            <input type="text" id="wall-sender-input" placeholder="Contoh: Rania Putri — XII IPA 1" class="w-full px-3.5 py-2.5 text-sm bg-[#FAF6F0] border border-[#C59B27]/40 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1B4332]">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-[#1B4332] mb-1.5">Pilihan Warna Kartu Pos</label>
+                            <div class="grid grid-cols-4 gap-2">
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="postcard-color" value="ivory" checked class="sr-only peer">
+                                    <div class="h-10 rounded-xl bg-[#FAF6F0] border-2 border-[#C59B27]/45 peer-checked:border-[#1B4332] peer-checked:ring-2 peer-checked:ring-[#1B4332]/25 flex items-center justify-center text-[11px] font-bold text-[#1B4332]">
+                                        Krem
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="postcard-color" value="sage" class="sr-only peer">
+                                    <div class="h-10 rounded-xl bg-[#EAF2EC] border-2 border-[#1B4332]/30 peer-checked:border-[#1B4332] peer-checked:ring-2 peer-checked:ring-[#1B4332]/25 flex items-center justify-center text-[11px] font-bold text-[#1B4332]">
+                                        Zamrud
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="postcard-color" value="terracotta" class="sr-only peer">
+                                    <div class="h-10 rounded-xl bg-[#FBECE8] border-2 border-[#B84A39]/35 peer-checked:border-[#B84A39] peer-checked:ring-2 peer-checked:ring-[#B84A39]/25 flex items-center justify-center text-[11px] font-bold text-[#B84A39]">
+                                        Terakota
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="postcard-color" value="gold" class="sr-only peer">
+                                    <div class="h-10 rounded-xl bg-[#FBF4E1] border-2 border-[#C59B27]/55 peer-checked:border-[#C59B27] peer-checked:ring-2 peer-checked:ring-[#C59B27]/30 flex items-center justify-center text-[11px] font-bold text-[#8A680D]">
+                                        Emas
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-[#1B4332] mb-1">Pesan untuk Bapak & Ibu Guru *</label>
+                            <textarea id="wall-message-input" rows="4" required placeholder="Tuliskan ungkapan terima kasih yang tulus untuk para guru..." class="w-full px-3.5 py-2.5 text-sm bg-[#FAF6F0] border border-[#C59B27]/40 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1B4332]"></textarea>
+                        </div>
+
+                        <button type="submit" class="w-full py-3.5 px-4 rounded-2xl bg-[#1B4332] hover:bg-[#2D6A4F] text-[#FAF6F0] font-bold text-sm shadow-md transition transform active:scale-95">
+                            Tempel ke Dinding Apresiasi
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Kolom Kanan: Grid Kartu Pos Apresiasi -->
+                <div class="lg:col-span-8">
+                    <div class="flex items-center justify-between mb-4 px-1">
+                        <span class="font-serif font-bold text-lg text-[#1B4332]">Catatan Ucapan Siswa</span>
+                        <span class="text-xs font-semibold px-3 py-1 rounded-full bg-white border border-[#C59B27]/40 text-[#1B4332]">
+                            Total <strong id="wall-post-counter">0</strong> Ucapan
+                        </span>
+                    </div>
+
+                    <div id="wall-posts-container" class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <!-- Kartu pos dirender melalui JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- =====================================================================
+         FOOTER
+         ===================================================================== -->
+    <footer class="bg-[#1B4332] text-[#FAF6F0]/85 border-t border-[#C59B27]/40 mt-16">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-center sm:text-left">
+            <div class="flex items-center justify-center sm:justify-start gap-2">
+                <span class="text-[#C59B27] text-base">✦</span>
+                <span class="font-serif font-bold text-sm text-white">Hari Guru Nasional</span>
+                <span>•</span>
+                <span>Kartu Ucapan General & Dinding Apresiasi</span>
+            </div>
+            <p class="font-hand text-xl text-[#C59B27]">“Terima kasih Guruku, jasa dan ilmumu abadi selalu.”</p>
+        </div>
+    </footer>
+
+    <!-- =====================================================================
+         JAVASCRIPT LOGIKA APLIKASI
+         ===================================================================== -->
+    <script>
+        // =====================================================================
+        // 1. DATA KONTEN 3 NUANSA PESAN GENERAL & CONTOH DINDING APRESIASI
+        // =====================================================================
+        const GENERAL_NUANCES = {
+            puitis: {
+                label: 'Hangat & Puitis',
+                paragraphs: [
+                    'Di setiap langkah kami menapaki masa depan, ada jejak kesabaran dan ketulusan Ms dan Mr yang tak pernah pudar. Laksana pelita di tengah gelap dan embun yang menyejukkan jiwa, ilmu yang Bapak dan Ibu tanamkan tumbuh menjadi cahaya penuntun hidup kami.',
+                    'Terima kasih telah mendidik kami bukan hanya dengan kata, melainkan dengan keteladanan dan kasih sayang yang tulus. Semoga kesehatan, kebahagiaan, serta kemuliaan senantiasa menyertai Ms dan Mr tercinta.'
+                ]
+            },
+            resmi: {
+                label: 'Resmi & Elegan',
+                paragraphs: [
+                    'Dengan penuh rasa hormat, kami mengucapkan Selamat Hari Guru Nasional kepada seluruh Bapak dan Ibu Guru. Dedikasi, integritas, serta pengabdian tulus Bapak dan Ibu dalam mencerdaskan kehidupan bangsa merupakan fondasi utama lahirnya generasi yang berkarakter dan berdaya saing.',
+                    'Terima kasih atas komitmen tanpa batas dalam membimbing, menginspirasi, dan mengantarkan kami meraih cita-cita. Semoga Tuhan Yang Maha Esa senantiasa melimpahkan kesehatan, kekuatan, dan keberkahan bagi Bapak dan Ibu sekalian.'
+                ]
+            },
+            singkat: {
+                label: 'Singkat & Menyentuh',
+                paragraphs: [
+                    'Selamat Hari Guru Nasional untuk seluruh Ms dan Mr tercinta! Terima kasih atas segala kesabaran dalam membimbing kami, ketulusan dalam memaafkan kekhilafan kami, dan semangat yang tak pernah lelah menyalakan mimpi-mimpi kami.',
+                    'Jasa Bapak dan Ibu tidak akan pernah tergantikan oleh waktu. Sehat dan bahagia selalu, Pahlawan Tanpa Tanda Jasa!'
+                ]
+            }
+        };
+
+        const DEFAULT_WALL_POSTS = [
+            {
+                id: 'wp-1',
+                sender: 'Nadia Kusuma — XII IPA 1',
+                color: 'ivory',
+                message: 'Selamat Hari Guru Nasional untuk seluruh Bapak dan Ibu Guru! Terima kasih sudah sabar membimbing kami dari yang belum tahu apa-apa hingga berani bermimpi besar.',
+                likes: 28,
+                liked: false
+            },
+            {
+                id: 'wp-2',
+                sender: 'Fajar Ramadhan — XI IPS 2',
+                color: 'sage',
+                message: 'Setiap nasihat dan senyuman Bapak/Ibu di kelas selalu menjadi penyemangat bagi kami. Semoga Ms dan Mr selalu diberikan kesehatan dan kebahagiaan.',
+                likes: 34,
+                liked: false
+            },
+            {
+                id: 'wp-3',
+                sender: 'Kirana Larasati — X-3',
+                color: 'terracotta',
+                message: 'Terima kasih sudah menjadi orang tua kedua bagi kami di sekolah. Ilmu dan keteladanan Bapak/Ibu akan selalu kami kenang sepanjang hidup.',
+                likes: 19,
+                liked: false
+            },
+            {
+                id: 'wp-4',
+                sender: 'Perwakilan Pengurus OSIS',
+                color: 'gold',
+                message: 'Satu kartu penuh cinta dan penghormatan untuk seluruh pendidik hebat kami. Terima kasih telah menyalakan pelita ilmu tanpa pernah lelah!',
+                likes: 42,
+                liked: false
+            }
+        ];
+
+        // =====================================================================
+        // 2. STATE APLIKASI & LOCALSTORAGE
+        // =====================================================================
+        let activeNuance = 'puitis';
+        let homeFlowerCount = 145;
+        let homeAppreciationCount = 260;
+        let cardReactions = {
+            thanks: 84,
+            flower: 62,
+            respect: 97
+        };
+        let wallPosts = [];
+
+        function loadStateFromStorage() {
+            try {
+                const hf = localStorage.getItem('hgn_gen_home_flower');
+                if (hf !== null) homeFlowerCount = parseInt(hf, 10) || 145;
+
+                const ha = localStorage.getItem('hgn_gen_home_appreciation');
+                if (ha !== null) homeAppreciationCount = parseInt(ha, 10) || 260;
+
+                const cr = localStorage.getItem('hgn_gen_card_reactions');
+                if (cr) cardReactions = { ...cardReactions, ...JSON.parse(cr) };
+
+                const wp = localStorage.getItem('hgn_gen_wall_posts');
+                wallPosts = wp ? JSON.parse(wp) : [...DEFAULT_WALL_POSTS];
+            } catch (e) {
+                wallPosts = [...DEFAULT_WALL_POSTS];
+            }
+        }
+
+        function saveStateToStorage() {
+            try {
+                localStorage.setItem('hgn_gen_home_flower', String(homeFlowerCount));
+                localStorage.setItem('hgn_gen_home_appreciation', String(homeAppreciationCount));
+                localStorage.setItem('hgn_gen_card_reactions', JSON.stringify(cardReactions));
+                localStorage.setItem('hgn_gen_wall_posts', JSON.stringify(wallPosts));
+            } catch (e) {
+                console.warn('Gagal menyimpan ke localStorage');
+            }
+        }
+
+        // =====================================================================
+        // 3. NAVIGASI HASH ROUTING (#beranda, #ucapan, #apresiasi)
+        // =====================================================================
+        function handleHashNavigation() {
+            const rawHash = window.location.hash || '#beranda';
+            const route = rawHash.split('?')[0].replace('#', '') || 'beranda';
+
+            document.querySelectorAll('.page-section').forEach(sec => sec.classList.add('hidden'));
+
+            document.querySelectorAll('.nav-link').forEach(link => {
+                const target = link.getAttribute('data-nav');
+                if (target === route) {
+                    link.classList.add('bg-[#1B4332]', 'text-[#FAF6F0]', 'shadow-sm');
+                    link.classList.remove('text-[#1B4332]', 'hover:bg-[#C59B27]/15');
+                } else {
+                    link.classList.remove('bg-[#1B4332]', 'text-[#FAF6F0]', 'shadow-sm');
+                    link.classList.add('text-[#1B4332]', 'hover:bg-[#C59B27]/15');
+                }
+            });
+
+            if (route === 'ucapan') {
+                document.getElementById('page-ucapan').classList.remove('hidden');
+                renderCardNuanceContent();
+                updateCardReactionCounters();
+            } else if (route === 'apresiasi') {
+                document.getElementById('page-apresiasi').classList.remove('hidden');
+                renderWallPosts();
+            } else {
+                document.getElementById('page-beranda').classList.remove('hidden');
+                updateHomeCounters();
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        window.addEventListener('hashchange', handleHashNavigation);
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadStateFromStorage();
+            handleHashNavigation();
+        });
+
+        function toggleMobileMenu() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        }
+
+        function closeMobileMenu() {
+            document.getElementById('mobile-menu').classList.add('hidden');
+        }
+
+        // =====================================================================
+        // 4. LOGIKA HALAMAN 1: BERANDA
+        // =====================================================================
+        function updateHomeCounters() {
+            document.getElementById('home-flower-count').textContent = homeFlowerCount;
+            document.getElementById('home-appreciation-count').textContent = homeAppreciationCount;
+        }
+
+        function sendHomeVirtualFlowers(type, event) {
+            if (type === 'flower') {
+                homeFlowerCount++;
+                document.getElementById('home-flower-count').textContent = homeFlowerCount;
+                spawnFloatingEmojis(['🌸', '💐', '🌺', '🌷', '✨'], event);
+                showToast('Sebuket bunga virtual terkirim untuk seluruh Bapak & Ibu Guru!');
+            } else {
+                homeAppreciationCount++;
+                document.getElementById('home-appreciation-count').textContent = homeAppreciationCount;
+                spawnFloatingEmojis(['👏', '✨', '💛', '🌟', '🙏'], event);
+                showToast('Apresiasi hangatmu telah ditambahkan!');
+            }
+            saveStateToStorage();
+        }
+
+        // =====================================================================
+        // 5. LOGIKA HALAMAN 2: AMPLOP 3D, KARTU UCAPAN GENERAL & KOTAK MUSIK
+        // =====================================================================
+        let audioCtx = null;
+        let musicLoopTimer = null;
+        let isMusicMuted = false;
+        let envelopeOpeningLock = false;
+
+        function triggerOpenEnvelope3D() {
+            if (envelopeOpeningLock) return;
+            envelopeOpeningLock = true;
+
+            const envEl = document.getElementById('interactive-envelope');
+            envEl.classList.add('is-opening');
+
+            // Jalankan melodi kotak musik lembut segera saat interaksi pengguna
+            if (!isMusicMuted) {
+                startGentleMusicBox();
+            }
+
+            // Setelah animasi lipatan amplop & kartu naik (850ms), tampilkan kartu penuh + konfeti
+            setTimeout(() => {
+                document.getElementById('envelope-stage').classList.add('hidden');
+                document.getElementById('card-opened-stage').classList.remove('hidden');
+                renderCardNuanceContent();
+                updateCardReactionCounters();
+
+                if (typeof confetti === 'function') {
+                    confetti({
+                        particleCount: 80,
+                        spread: 75,
+                        origin: { y: 0.58 },
+                        colors: ['#C59B27', '#1B4332', '#B84A39', '#FAF6F0']
+                    });
+                }
+                envelopeOpeningLock = false;
+            }, 850);
+        }
+
+        function resetCloseEnvelope() {
+            stopGentleMusicBox();
+            document.getElementById('card-opened-stage').classList.add('hidden');
+            document.getElementById('envelope-stage').classList.remove('hidden');
+
+            const envEl = document.getElementById('interactive-envelope');
+            envEl.classList.remove('is-opening');
+            envelopeOpeningLock = false;
+        }
+
+        function selectCardNuance(nuanceKey) {
+            if (!GENERAL_NUANCES[nuanceKey]) return;
+            activeNuance = nuanceKey;
+
+            // Perbarui gaya tombol pill
+            document.querySelectorAll('.nuance-pill').forEach(btn => {
+                btn.classList.remove('bg-[#1B4332]', 'text-[#FAF6F0]', 'font-bold', 'shadow-sm');
+                btn.classList.add('text-[#1B4332]', 'font-semibold', 'hover:bg-[#FAF6F0]');
+            });
+
+            const activeBtn = document.getElementById(`nuance-btn-${nuanceKey}`);
+            if (activeBtn) {
+                activeBtn.classList.add('bg-[#1B4332]', 'text-[#FAF6F0]', 'font-bold', 'shadow-sm');
+                activeBtn.classList.remove('text-[#1B4332]', 'font-semibold', 'hover:bg-[#FAF6F0]');
+            }
+
+            renderCardNuanceContent();
+        }
+
+        function renderCardNuanceContent() {
+            const container = document.getElementById('general-card-body');
+            const data = GENERAL_NUANCES[activeNuance] || GENERAL_NUANCES.puitis;
+
+            container.innerHTML = data.paragraphs
+                .map(p => `<p>${escapeHtml(p)}</p>`)
+                .join('');
+        }
+
+        // Kotak Musik Web Audio API
+        function startGentleMusicBox() {
+            stopGentleMusicBox();
+            try {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                if (!audioCtx) {
+                    audioCtx = new AudioContextClass();
+                }
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+
+                // Nada lembut bertempo tenang
+                const notes = [
+                    329.63, 392.00, 523.25, 493.88, 392.00, 440.00, 392.00, 329.63,
+                    293.66, 329.63, 392.00, 440.00, 392.00, 329.63, 261.63, 293.66
+                ];
+                let idx = 0;
+
+                const playSingleNote = () => {
+                    if (isMusicMuted || !audioCtx) return;
+                    const now = audioCtx.currentTime;
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(notes[idx % notes.length], now);
+
+                    gain.gain.setValueAtTime(0.0001, now);
+                    gain.gain.exponentialRampToValueAtTime(0.055, now + 0.05);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.85);
+
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+
+                    osc.start(now);
+                    osc.stop(now + 0.9);
+                    idx++;
+                };
+
+                playSingleNote();
+                musicLoopTimer = setInterval(playSingleNote, 680);
+                updateMusicStatusUI();
+            } catch (e) {
+                console.warn('Web Audio API tidak tersedia:', e);
+            }
+        }
+
+        function stopGentleMusicBox() {
+            if (musicLoopTimer) {
+                clearInterval(musicLoopTimer);
+                musicLoopTimer = null;
+            }
+        }
+
+        function toggleCardMusic() {
+            isMusicMuted = !isMusicMuted;
+            if (isMusicMuted) {
+                stopGentleMusicBox();
+            } else {
+                startGentleMusicBox();
+            }
+            updateMusicStatusUI();
+        }
+
+        function updateMusicStatusUI() {
+            const iconEl = document.getElementById('music-status-icon');
+            const textEl = document.getElementById('music-status-text');
+            if (isMusicMuted) {
+                iconEl.textContent = '🔇';
+                textEl.textContent = 'Musik: Senyap';
+            } else {
+                iconEl.textContent = '🎵';
+                textEl.textContent = 'Musik: Aktif';
+            }
+        }
+
+        // Reaksi Terima Kasih pada Kartu
+        function updateCardReactionCounters() {
+            document.getElementById('react-count-thanks').textContent = cardReactions.thanks;
+            document.getElementById('react-count-flower').textContent = cardReactions.flower;
+            document.getElementById('react-count-respect').textContent = cardReactions.respect;
+        }
+
+        function triggerCardReaction(key, event) {
+            if (!(key in cardReactions)) return;
+            cardReactions[key]++;
+            updateCardReactionCounters();
+            saveStateToStorage();
+
+            const emojiMap = {
+                thanks: ['❤️', '💖', '✨'],
+                flower: ['🌸', '💐', '🌺'],
+                respect: ['🙏', '🌟', '💛']
+            };
+            spawnFloatingEmojis(emojiMap[key] || ['✨'], event);
+        }
+
+        // Export Kartu Ucapan General ke PNG Resolusi Tinggi (1080x1350)
+        function exportGeneralCardPng() {
+            const canvas = document.createElement('canvas');
+            const width = 1080;
+            const height = 1350;
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+
+            // 1. Latar Krem Hangat (#FAF6F0)
+            ctx.fillStyle = '#FAF6F0';
+            ctx.fillRect(0, 0, width, height);
+
+            // 2. Bingkai Ganda Emas (#C59B27)
+            ctx.strokeStyle = '#C59B27';
+            ctx.lineWidth = 10;
+            ctx.strokeRect(42, 42, width - 84, height - 84);
+
+            ctx.lineWidth = 2;
+            ctx.strokeRect(62, 62, width - 124, height - 124);
+
+            // 3. Header Hijau Zamrud Tua (#1B4332)
+            ctx.fillStyle = '#1B4332';
+            ctx.fillRect(62, 62, width - 124, 340);
+
+            // Bingkai Tipis dalam Header
+            ctx.strokeStyle = 'rgba(197, 155, 39, 0.45)';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(86, 86, width - 172, 292);
+
+            // Teks Header
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#C59B27';
+            ctx.font = 'bold 25px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText('✦   SELAMAT HARI GURU NASIONAL   ✦', width / 2, 165);
+
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = 'bold 50px "Cormorant Garamond", Georgia, serif';
+            ctx.fillText('Untuk Bapak & Ibu Guru Tercinta', width / 2, 245);
+
+            ctx.fillStyle = '#E8D59E';
+            ctx.font = '500 24px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText('Pahlawan Tanpa Tanda Jasa  •  Pelita Peradaban', width / 2, 315);
+
+            // 4. Kotak Isi Surat Putih
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(108, 452, width - 216, 680);
+            ctx.strokeStyle = '#C59B27';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(108, 452, width - 216, 680);
+
+            // Ornamen Atas Kotak
+            ctx.fillStyle = '#C59B27';
+            ctx.font = '24px Georgia, serif';
+            ctx.fillText('❖   ✦   ❖', width / 2, 515);
+
+            // Render Paragraf Pesan Sesuai Nuansa Aktif
+            const nuanceData = GENERAL_NUANCES[activeNuance] || GENERAL_NUANCES.puitis;
+            ctx.fillStyle = '#1B4332';
+            ctx.font = 'italic 33px "Cormorant Garamond", Georgia, serif';
+
+            let currentY = 585;
+            const maxTextWidth = width - 310;
+            const lineHeight = 48;
+
+            nuanceData.paragraphs.forEach((paragraph) => {
+                const lines = wrapCanvasLines(ctx, paragraph, maxTextWidth);
+                lines.forEach((line) => {
+                    ctx.fillText(line, width / 2, currentY);
+                    currentY += lineHeight;
+                });
+                currentY += 26; // Jarak antar paragraf
+            });
+
+            // 5. Tanda Tangan di Bagian Bawah
+            ctx.fillStyle = '#1B4332';
+            ctx.font = '500 24px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText('Dengan penuh hormat dan terima kasih,', width / 2, 1190);
+
+            ctx.fillStyle = '#B84A39';
+            ctx.font = 'bold 46px "Dancing Script", cursive, serif';
+            ctx.fillText('Keluarga Besar Siswa & Panitia', width / 2, 1252);
+
+            // Unduh File PNG
+            const link = document.createElement('a');
+            link.download = `Kartu_Hari_Guru_General_${activeNuance}.png`;
+            link.href = canvas.toDataURL('image/png');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            showToast('Kartu ucapan general berhasil disimpan sebagai PNG!');
+        }
+
+        function wrapCanvasLines(ctx, text, maxWidth) {
+            const words = text.split(' ');
+            const lines = [];
+            let currentLine = words[0] || '';
+
+            for (let i = 1; i < words.length; i++) {
+                const testLine = currentLine + ' ' + words[i];
+                if (ctx.measureText(testLine).width < maxWidth) {
+                    currentLine = testLine;
+                } else {
+                    lines.push(currentLine);
+                    currentLine = words[i];
+                }
+            }
+            lines.push(currentLine);
+            return lines;
+        }
+
+        // Salin Link Langsung ke Kartu Ucapan (#ucapan)
+        function copyGeneralCardLink() {
+            const baseUrl = window.location.href.split('#')[0];
+            const shareUrl = `${baseUrl}#ucapan`;
+
+            const tempInput = document.createElement('textarea');
+            tempInput.value = shareUrl;
+            tempInput.style.position = 'fixed';
+            tempInput.style.opacity = '0';
+            document.body.appendChild(tempInput);
+            tempInput.focus();
+            tempInput.select();
+
+            let copied = false;
+            try {
+                copied = document.execCommand('copy');
+            } catch (e) {
+                copied = false;
+            }
+            document.body.removeChild(tempInput);
+
+            if (copied) {
+                showToast('Tautan kartu ucapan berhasil disalin ke papan klip!');
+            } else if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(shareUrl)
+                    .then(() => showToast('Tautan kartu ucapan berhasil disalin!'))
+                    .catch(() => showToast('Tautan siap dibagikan: ' + shareUrl));
+            } else {
+                showToast('Tautan kartu: ' + shareUrl);
+            }
+        }
+
+        // =====================================================================
+        // 6. LOGIKA HALAMAN 3: DINDING APRESIASI
+        // =====================================================================
+        function submitWallPost(event) {
+            event.preventDefault();
+            const senderRaw = document.getElementById('wall-sender-input').value.trim();
+            const message = document.getElementById('wall-message-input').value.trim();
+            const colorInput = document.querySelector('input[name="postcard-color"]:checked');
+            const color = colorInput ? colorInput.value : 'ivory';
+
+            if (!message) return;
+
+            wallPosts.unshift({
+                id: 'wp-' + Date.now(),
+                sender: senderRaw || 'Siswa/i Penuh Rasa Hormat',
+                color,
+                message,
+                likes: 1,
+                liked: true
+            });
+
+            saveStateToStorage();
+            renderWallPosts();
+
+            document.getElementById('wall-sender-input').value = '';
+            document.getElementById('wall-message-input').value = '';
+            showToast('Kartu ucapanmu berhasil ditempel ke Dinding Apresiasi!');
+        }
+
+        function toggleWallPostLike(postId) {
+            const target = wallPosts.find(p => p.id === postId);
+            if (!target) return;
+            target.liked = !target.liked;
+            target.likes += target.liked ? 1 : -1;
+            saveStateToStorage();
+            renderWallPosts();
+        }
+
+        function getPostcardThemeClasses(color) {
+            switch (color) {
+                case 'sage':
+                    return 'bg-[#EAF2EC] border-[#1B4332]/25';
+                case 'terracotta':
+                    return 'bg-[#FBECE8] border-[#B84A39]/30';
+                case 'gold':
+                    return 'bg-[#FBF4E1] border-[#C59B27]/50';
+                case 'ivory':
+                default:
+                    return 'bg-[#FFFDF9] border-[#C59B27]/40';
+            }
+        }
+
+        function renderWallPosts() {
+            const container = document.getElementById('wall-posts-container');
+            const counterEl = document.getElementById('wall-post-counter');
+
+            counterEl.textContent = wallPosts.length;
+            container.innerHTML = '';
+
+            wallPosts.forEach((post, index) => {
+                const subtleRotate = index % 2 === 0 ? 'sm:-rotate-1 hover:rotate-0' : 'sm:rotate-1 hover:rotate-0';
+                const card = document.createElement('div');
+                card.className = `rounded-3xl p-6 border shadow-sm hover:shadow-md transition duration-200 flex flex-col justify-between ${getPostcardThemeClasses(post.color)} ${subtleRotate}`;
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between gap-2 mb-3">
+                            <span class="px-3 py-1 rounded-full bg-[#1B4332]/10 text-[#1B4332] text-[11px] font-bold">
+                                Untuk Bapak & Ibu Guru
+                            </span>
+                            <span class="text-[#C59B27] text-sm select-none">✦</span>
+                        </div>
+                        <p class="font-serif text-base sm:text-lg text-[#1B4332] leading-relaxed italic">
+                            “${escapeHtml(post.message)}”
+                        </p>
+                    </div>
+
+                    <div class="mt-5 pt-3.5 border-t border-[#1B4332]/10 flex items-center justify-between gap-2">
+                        <span class="font-hand text-xl sm:text-2xl font-bold text-[#B84A39]">
+                            — ${escapeHtml(post.sender)}
+                        </span>
+                        <button onclick="toggleWallPostLike('${post.id}')" aria-label="Sukai ucapan" class="px-3.5 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 transition transform active:scale-90 ${post.liked ? 'bg-[#B84A39] text-white shadow-sm' : 'bg-white/90 text-[#1B4332] border border-[#C59B27]/35 hover:bg-rose-50'}">
+                            <span>${post.liked ? '❤️' : '🤍'}</span>
+                            <span>${post.likes}</span>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // =====================================================================
+        // 7. UTILITAS UMUM (PARTIKEL MELAYANG, TOAST, ESCAPE HTML)
+        // =====================================================================
+        function spawnFloatingEmojis(emojis, event) {
+            const originX = event && event.clientX ? event.clientX : window.innerWidth / 2;
+            const originY = event && event.clientY ? event.clientY : window.innerHeight / 2;
+
+            for (let i = 0; i < 7; i++) {
+                const el = document.createElement('div');
+                el.className = 'particle-anim text-2xl sm:text-3xl select-none';
+                el.textContent = emojis[i % emojis.length];
+                const offsetX = (Math.random() - 0.5) * 140;
+                const offsetY = (Math.random() - 0.5) * 30;
+                el.style.left = `${originX + offsetX}px`;
+                el.style.top = `${originY + offsetY}px`;
+                el.style.animationDelay = `${i * 0.06}s`;
+                document.body.appendChild(el);
+                setTimeout(() => el.remove(), 1950);
+            }
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'bg-[#1B4332] text-[#FAF6F0] text-xs font-semibold px-4 py-3 rounded-2xl shadow-xl border border-[#C59B27]/55 flex items-center gap-2.5 page-enter';
+            toast.innerHTML = `
+                <span class="w-2 h-2 rounded-full bg-[#C59B27] shrink-0"></span>
+                <span>${escapeHtml(message)}</span>
+            `;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
